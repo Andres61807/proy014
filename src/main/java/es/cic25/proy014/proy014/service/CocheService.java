@@ -33,13 +33,21 @@ public class CocheService {
         return cocheRepository.listCochesMultados();
     }
 
-
-
     public Coche createCoche(Coche coche){
         return cocheRepository.save(coche);
     }
 
     public Coche updateCoche(Coche coche){
+        Coche cocheOriginal=cocheRepository.findById(coche.getId()).orElse(null);
+        if (coche.getPlaza().getId()!=cocheOriginal.getPlaza().getId()){
+            
+            Multa multa=new Multa();
+            multa.setCoche(coche);
+            multa.setFecha(LocalDate.now());
+            multa.setImporte(100);
+            multa.setPagada(false);
+            multaRepository.save(multa);
+        }
         return cocheRepository.save(coche);
     }
 

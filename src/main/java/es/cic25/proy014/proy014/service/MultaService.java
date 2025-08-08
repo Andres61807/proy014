@@ -23,10 +23,6 @@ public class MultaService {
         return multaRepository.findAll();
     }
 
-    public List<Multa> getMultasPagadas(boolean pagado){
-        return multaRepository.findByPagado(pagado);
-    }
-
     public Multa createMulta(Multa multa) {
         return multaRepository.save(multa);
     }

@@ -32,11 +32,6 @@ public class MultaController {
         return multaService.getMultas();
     }
 
-    @GetMapping("/multas-pagadas/{pagado}")
-    public List<Multa> getMultasPagadas(@PathVariable boolean pagado){
-        return multaService.getMultasPagadas(pagado);
-    }
-
     @PostMapping()
     public Multa createMulta(@RequestBody Multa multa) {
         return multaService.createMulta(multa);
