@@ -1,6 +1,6 @@
 package es.cic25.proy014.proy014.testcontroler;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -8,6 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @AutoConfigureMockMvc
 public class CocheControlerIntegrationTest {
     
-    
+    @BeforeEach
+    void setup(){
+        
+    }    
    
 }

@@ -28,7 +28,10 @@ public class Coche {
 
     private String dueño;
 
-    @OneToMany(mappedBy = "coche",fetch = FetchType.EAGER,cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @OneToMany(mappedBy = "coche"
+        ,fetch = FetchType.EAGER
+        ,cascade =  {CascadeType.REMOVE,CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH}
+        ,orphanRemoval = true)
     @JsonManagedReference
     private List<Multa> multas;
 
