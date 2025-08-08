@@ -1,8 +1,10 @@
 package es.cic25.proy014.proy014.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -30,13 +32,14 @@ public class Coche {
 
     @OneToMany(mappedBy = "coche"
         ,fetch = FetchType.EAGER
-        ,cascade =  {CascadeType.REMOVE,CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH}
+        ,cascade =  {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH}
         ,orphanRemoval = true)
-    @JsonManagedReference
-    private List<Multa> multas;
+    @JsonIgnoreProperties("coche")
+    private List<Multa> multas=new ArrayList<>();
 
-    @OneToOne
-    @JsonBackReference
+    @OneToOne(cascade =  {CascadeType.MERGE,CascadeType.REFRESH},
+        fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = "coche")
     @JoinColumn(name="")
     private Plaza plaza;
 

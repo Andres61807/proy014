@@ -1,7 +1,10 @@
 
 package es.cic25.proy014.proy014.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,17 +27,18 @@ public class Plaza {
     private boolean trastero;
 
     @OneToOne(mappedBy = "plaza")
-    @JsonManagedReference
+    @JsonIgnoreProperties(value = "plaza")
     private Coche coche;
 
     public Plaza() {
     }
 
-    public Plaza(Long id, String ubicacion, int piso, boolean trastero) {
+    public Plaza(Long id, String ubicacion, int piso, boolean trastero, Coche coche) {
         this.id = id;
         this.ubicacion = ubicacion;
         this.piso = piso;
         this.trastero = trastero;
+        this.coche=coche;
     }
 
     public Long getId() {
@@ -69,6 +73,14 @@ public class Plaza {
         this.trastero = trastero;
     }
 
+    public Coche getCoche() {
+        return coche;
+    }
+
+    public void setCoche(Coche coche) {
+        this.coche = coche;
+    }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -98,4 +110,7 @@ public class Plaza {
     public String toString() {
         return "Plaza [id=" + id + ", nombre=" + ubicacion + ", piso=" + piso + ", trastero=" + trastero + "]";
     }
+
+    
+    
 }

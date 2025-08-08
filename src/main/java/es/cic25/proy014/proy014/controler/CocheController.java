@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.cic25.proy014.proy014.model.Coche;
+import es.cic25.proy014.proy014.model.Plaza;
 import es.cic25.proy014.proy014.service.CocheService;
 
 @RestController
@@ -33,7 +34,7 @@ public class CocheController {
         return cocheService.getCoches();
     }
     
-    @GetMapping()
+    @GetMapping("/listado/multados")
     public List<Coche> getCochesMultados(){
         return cocheService.getCochesMultados();
     }
@@ -45,6 +46,11 @@ public class CocheController {
 
     @PutMapping()
     public Coche updateCoche(@RequestBody Coche coche){
+        return cocheService.updateCoche(coche);
+    }
+
+    @PutMapping("/aparcar")
+    public Coche aparcaCoche(@RequestBody Coche coche,@RequestBody Plaza plaza){
         return cocheService.updateCoche(coche);
     }
 
