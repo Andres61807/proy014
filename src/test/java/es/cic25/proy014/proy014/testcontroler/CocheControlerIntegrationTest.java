@@ -64,11 +64,14 @@ public class CocheControlerIntegrationTest {
     private Coche coche;
     private Coche coche2;
     private Coche coche3;
+    private Coche coche4;
+    private Coche coche5;
+    private Coche coche6;
 
     private Multa multa;
     private Multa multa2;
     private Multa multa3;
-
+    
     @BeforeEach
     void setup(){
         plazaRepository.deleteAll();
@@ -83,6 +86,7 @@ public class CocheControlerIntegrationTest {
         //se le dan datos a las plazas
         plaza.setPiso(1);
         plaza.setTrastero(false);
+        
 
         plaza2.setPiso(2);
         plaza2.setTrastero(false);
@@ -107,39 +111,39 @@ public class CocheControlerIntegrationTest {
         coche=new Coche();
         coche2=new Coche();
         coche3=new Coche();
-        
+        coche4=new Coche();
+        coche5=new Coche();
+        coche6=new Coche();
+
         //se le dan datos a los cohes
-        coche.setDueño("Paco");
+        coche.setPropietario("Paco");
         coche.setMatricula("123");
 
-        coche2.setDueño("Pepe");
+        coche2.setPropietario("Pepe");
         coche2.setMatricula("456");
 
-        coche3.setDueño("Juan Antonio");
+        coche3.setPropietario("Juan Antonio");
         coche3.setMatricula("789");
         
         //se guardan los coches en la db
         coche=cocheRepository.save(coche);
         coche2=cocheRepository.save(coche2);
         coche3=cocheRepository.save(coche3);
-        
+        coche6=cocheRepository.save(coche6);
         //se crean las multas
         multa=new Multa();
         multa2=new Multa();
         multa3=new Multa();
         
         //se le dan datos a las multas
-        multa.setFecha(LocalDate.now());
         multa.setImporte(100);
         multa.setPagada(false);
 
         
-        multa2.setFecha(LocalDate.now());
         multa2.setImporte(100);
         multa2.setPagada(false);
         
         
-        multa3.setFecha(LocalDate.now());
         multa3.setImporte(100);
         multa3.setPagada(false);
         
@@ -148,15 +152,25 @@ public class CocheControlerIntegrationTest {
         multa2=multaRepository.save(multa2);
         multa3=multaRepository.save(multa3);
 
-        //asignacion de coches plazas
-        coche.setPlaza(plaza);
-        coche2.setPlaza(plaza2);
-        coche3.setPlaza(plaza3);
+        //asignacion de plazas correspondientes a los coches
+        coche.setPlazaAsignada(plaza);
+        coche2.setPlazaAsignada(plaza2);
+        coche3.setPlazaAsignada(plaza3);
+        coche4.setPlazaAsignada(plaza4);
+        coche5.setPlazaAsignada(plaza5);
 
-        plaza.setCoche(coche);
-        plaza2.setCoche(coche2);
-        plaza3.setCoche(coche3);
+        //aparcar un coche en una plaza
+        plaza.setCocheAparcado(coche);
+        plaza2.setCocheAparcado(coche2);
 
+        plaza.getCochesAsignados().add(coche);
+        plaza.getCochesAsignados().add(coche2);
+        
+        plaza2.getCochesAsignados().add(coche);
+        plaza2.getCochesAsignados().add(coche2);
+        plaza2.getCochesAsignados().add(coche3);
+        plaza2.getCochesAsignados().add(coche4);
+        plaza2.getCochesAsignados().add(coche5);
         //asignacion de multas coche
         multa.setCoche(coche);
         multa2.setCoche(coche);
@@ -165,6 +179,8 @@ public class CocheControlerIntegrationTest {
         coche.getMultas().add(multa);
         coche.getMultas().add(multa2);
         coche.getMultas().add(multa3);
+
+        
     }
 
     @Test
@@ -176,7 +192,7 @@ public class CocheControlerIntegrationTest {
 
         Coche cocheComprobacion=objectMapper.readValue(mvcResult.getResponse().getContentAsString(),Coche.class);
         
-        assertTrue(cocheComprobacion.getPlaza()!=null);
+        assertTrue(cocheComprobacion.getPlazaAparcado()!=null);
         assertEquals("123",cocheComprobacion.getMatricula());
         assertEquals(3,cocheComprobacion.getMultas().size());
     }
@@ -210,9 +226,9 @@ public class CocheControlerIntegrationTest {
     @Test
     void createCocheTest() throws Exception{
         Coche cocheNuevo = new Coche();
-        cocheNuevo.setDueño("yo");
+        cocheNuevo.setPropietario("yo");
         cocheNuevo.setMatricula("matriculapamultas");
-        cocheNuevo.setPlaza(plaza4);
+        cocheNuevo.setPlazaAparcado(plaza4);
 
         String cocheJson=objectMapper.writeValueAsString(cocheNuevo);
 
@@ -230,7 +246,7 @@ public class CocheControlerIntegrationTest {
 
     @Test
     void updateCocheTest() throws Exception{
-        coche.setDueño("yo");
+        coche.setPropietario("yo");
         coche.setMatricula("Aa123");
         coche.getMultas().remove(0);
 
@@ -245,17 +261,17 @@ public class CocheControlerIntegrationTest {
 
         Coche cocheResultado=objectMapper.readValue(mvcResult.getResponse().getContentAsString(),Coche.class);
 
-        assertEquals("yo", cocheResultado.getDueño());
+        assertEquals("yo", cocheResultado.getPropietario());
         assertEquals("Aa123", cocheResultado.getMatricula());
         assertEquals(2, cocheResultado.getMultas().size());
     }
 
     @Test
-    void updateMultaCoche() throws Exception{        
-    
+    void updateAparcarMultaCocheTest() throws Exception{        
         String cocheJson=objectMapper.writeValueAsString(coche);
 
-        MvcResult mvcResult=mockMvc.perform(put("/coche")
+
+        MvcResult mvcResult=mockMvc.perform(put("/coche/aparcar/"+plaza4.getId().toString())
             .contentType("application/json")
             .content(cocheJson))
             .andDo(print())
@@ -265,6 +281,57 @@ public class CocheControlerIntegrationTest {
         Coche cocheResultado=objectMapper.readValue(mvcResult.getResponse().getContentAsString(),Coche.class);
         assertEquals(4, cocheResultado.getMultas().size());
     }
+
+    @Test
+    void updateAparcarCocheTest() throws Exception{        
+        String cocheJson=objectMapper.writeValueAsString(coche);
+
+       mockMvc.perform(put("/coche/aparcar/"+plaza4.getId().toString())
+            .contentType("application/json")
+            .content(cocheJson))
+            .andDo(print())
+            .andExpect(status().isOk());            
+    }
+
+    @Test
+    void updateAparcarCocheExceptionTest() throws Exception{        
+        String cocheJson=objectMapper.writeValueAsString(coche);
+
+        mockMvc.perform(put("/coche/aparcar/"+plaza2.getId().toString())
+            .contentType("application/json")
+            .content(cocheJson))
+            .andDo(print())
+            .andExpect(status().isBadRequest());            
+    }       
+
+    @Test
+    void updateAsignarPlazaTest() throws Exception {
+        String cocheJson=objectMapper.writeValueAsString(plaza4);
+
+        MvcResult mvcResult=mockMvc.perform(put("/plaza/asignar/"+coche.getId().toString())
+            .contentType("application/json")
+            .content(cocheJson))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andReturn();
+
+        Plaza plazaResultado=objectMapper.readValue(mvcResult.getResponse().getContentAsString(),Plaza.class);
+        assertEquals(1, plazaResultado.getCochesAsignados().size());
+    }
+
+    @Test
+    void updateAsignarPlazaExceptionTest() throws Exception {
+        
+        String cocheJson=objectMapper.writeValueAsString(plaza);
+
+        mockMvc.perform(put("/plaza/asignar/"+coche6.getId().toString())
+            .contentType("application/json")
+            .content(cocheJson))
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andReturn();
+
+        }
 
 
 }

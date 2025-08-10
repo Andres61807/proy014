@@ -12,6 +12,7 @@ import es.cic25.proy014.proy014.model.Multa;
 import es.cic25.proy014.proy014.model.Plaza;
 import es.cic25.proy014.proy014.respository.CocheRepository;
 import es.cic25.proy014.proy014.respository.MultaRepository;
+import es.cic25.proy014.proy014.respository.PlazaRepository;
 
 @Service
 @Transactional
@@ -21,6 +22,8 @@ public class CocheService {
     private CocheRepository cocheRepository;
     @Autowired
     private MultaRepository multaRepository;
+    @Autowired
+    private PlazaRepository plazaRepository;
 
     @Transactional(readOnly = true)
     public Coche getCoche(Long id){
@@ -42,40 +45,35 @@ public class CocheService {
     }
 
     public Coche updateCoche(Coche coche){
-        Coche cocheOriginal=cocheRepository.findById(coche.getId()).orElse(null);
-        if (coche.getPlaza().getId()!=cocheOriginal.getPlaza().getId()){
-            Multa multa=new Multa();
-            multa.setCoche(coche);
-            multa.setFecha(LocalDate.now());
-            multa.setImporte(100);
-            multa.setPagada(false);
-            multa.setCoche(coche);
-
-            coche.getMultas().add(multa);
-        }
         return cocheRepository.save(coche);
     }
 
-    public Coche multarCoche(Coche coche, Plaza plaza){
-        if (coche.getPlaza().getId()!=plaza.getId()){
-            Multa multa=new Multa();
-            multa.setCoche(coche);
-            multa.setFecha(LocalDate.now());
-            multa.setImporte(100);
-            multa.setPagada(false);
-            multa.setCoche(coche);
+    public Coche aparcaCoche(Coche coche,Long id){
+        Plaza plazaNuevaAparcar=plazaRepository.findById(id).orElse(null);
+        Plaza plazaAsignada=plazaRepository.findById(coche.getPlazaAsignada().getId()).get();
+        if(plazaNuevaAparcar.getCocheAparcado()==null){
+            if (plazaAsignada.getId()!=plazaNuevaAparcar.getId()){
+                Multa multa=new Multa();
+                multa.setCoche(coche);
+                multa.setPagada(false);
+                multa.setCoche(coche);
 
-            coche.setPlaza(plaza);
+                coche.setPlazaAparcado(plazaNuevaAparcar);
 
-            coche.getMultas().add(multa);
+                coche.getMultas().add(multa);
+                return cocheRepository.save(coche);
+            } else {
+                coche.setPlazaAparcado(plazaNuevaAparcar);
+                return cocheRepository.save(coche);
+            }
+        } else {
+            throw new PlazaOcupadaException("La plaza ya esta ocupada");
         }
-        return cocheRepository.save(coche);
     }
 
     public Coche multarCoche(Coche coche,double importe){
         Multa multa=new Multa();
         multa.setCoche(coche);
-        multa.setFecha(LocalDate.now());
         multa.setImporte(importe);
         multa.setPagada(false);
         multaRepository.save(multa);

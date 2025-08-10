@@ -12,7 +12,7 @@ import es.cic25.proy014.proy014.respository.MultaRepository;
 @Service
 @Transactional
 public class MultaService {
-     @Autowired
+    @Autowired
     private MultaRepository multaRepository;
 
     public Multa getMulta(Long id) {

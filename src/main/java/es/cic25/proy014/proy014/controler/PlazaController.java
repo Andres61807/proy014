@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.cic25.proy014.proy014.model.Coche;
 import es.cic25.proy014.proy014.model.Plaza;
 import es.cic25.proy014.proy014.service.PlazaService;
 
@@ -32,11 +33,6 @@ public class PlazaController {
         return plazaService.getPlazas();
     }
 
-    @GetMapping("/plazas-vacias")
-    public List<Plaza> getPlazasVacias(){
-        return plazaService.getPlazasVacias();
-    }
-
     @PostMapping()
     public Plaza createPlaza(@RequestBody Plaza plaza){
         return plazaService.createPlaza(plaza);
@@ -46,7 +42,17 @@ public class PlazaController {
     public Plaza updatePlaza(@RequestBody Plaza plaza){
         return plazaService.updatePlaza(plaza);
     }
-    
+
+    @PutMapping("/asignar/{id}")
+    public Plaza asignarPlaza(@RequestBody Plaza plaza,@PathVariable long id){
+        return plazaService.asignaPlaza(plaza,Long.valueOf(id));
+    }
+
+    @PutMapping("/desasignar/{id}")
+    public Plaza desasignaPlaza(@RequestBody Plaza plaza,@PathVariable long id){
+        return plazaService.desasignaPlaza(plaza,Long.valueOf(id));
+    }
+        
     @DeleteMapping("/{id}")
     public void deletePlaza(@PathVariable long id){
         plazaService.deletePlaza(Long.valueOf(id));

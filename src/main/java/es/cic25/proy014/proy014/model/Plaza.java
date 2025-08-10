@@ -1,5 +1,8 @@
 
 package es.cic25.proy014.proy014.model;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,10 +13,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
 @Entity
 public class Plaza {
+
+    @Column(insertable = false)
+    private static final int MAX_PLAZAS=5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +33,14 @@ public class Plaza {
 
     private boolean trastero;
 
-    @OneToOne(mappedBy = "plaza")
-    @JsonIgnoreProperties(value = "plaza")
-    private Coche coche;
+    @OneToOne(mappedBy = "plazaAparcado")
+    @JsonIgnoreProperties(value = {"plazaAparcado","plazaAsignada"})
+    private Coche cocheAparcado;
 
+    @OneToMany(mappedBy = "plazaAsignada")
+    @JsonIgnoreProperties(value = {"plazaAparcado","plazaAsignada"})
+    private List<Coche> cochesAsignados=new ArrayList<>();
+    
     public Plaza() {
     }
 
@@ -38,7 +49,7 @@ public class Plaza {
         this.ubicacion = ubicacion;
         this.piso = piso;
         this.trastero = trastero;
-        this.coche=coche;
+        this.cocheAparcado=coche;
     }
 
     public Long getId() {
@@ -73,14 +84,26 @@ public class Plaza {
         this.trastero = trastero;
     }
 
-    public Coche getCoche() {
-        return coche;
+    public Coche getCocheAparcado() {
+        return cocheAparcado;
     }
 
-    public void setCoche(Coche coche) {
-        this.coche = coche;
+    public void setCocheAparcado(Coche coche) {
+        this.cocheAparcado = coche;
     }
     
+     public List<Coche> getCochesAsignados() {
+        return cochesAsignados;
+    }
+
+    public void setCochesAsignados(List<Coche> cochesAsignados) {
+        this.cochesAsignados = cochesAsignados;
+    }
+       
+    public static int getMaxPlazas() {
+        return MAX_PLAZAS;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -110,6 +133,10 @@ public class Plaza {
     public String toString() {
         return "Plaza [id=" + id + ", nombre=" + ubicacion + ", piso=" + piso + ", trastero=" + trastero + "]";
     }
+
+    
+
+   
 
     
     

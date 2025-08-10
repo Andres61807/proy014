@@ -3,9 +3,7 @@ package es.cic25.proy014.proy014.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -28,8 +27,9 @@ public class Coche {
 
     private String matricula;
 
-    private String dueño;
+    private String propietario;
 
+    //listado de nultas
     @OneToMany(mappedBy = "coche"
         ,fetch = FetchType.EAGER
         ,cascade =  {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REFRESH}
@@ -37,21 +37,28 @@ public class Coche {
     @JsonIgnoreProperties("coche")
     private List<Multa> multas=new ArrayList<>();
 
+    //plaza donde ha aparcado
     @OneToOne(cascade =  {CascadeType.MERGE,CascadeType.REFRESH},
         fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = "coche")
-    @JoinColumn(name="")
-    private Plaza plaza;
+    @JsonIgnoreProperties(value = {"cocheAparcado","cochesAsignados"})
+    @JoinColumn(name="id_plaza")
+    private Plaza plazaAparcado;
+
+    //plaza asignada
+    @ManyToOne
+    @JsonIgnoreProperties(value={"cocheAparcado","cochesAsignados"})
+    private Plaza plazaAsignada;
 
     public Coche() {
     }
 
-    public Coche(Long id, String matricula, String dueño, List<Multa> multas, Plaza plaza) {
+    public Coche(Long id, String matricula, String propietario, List<Multa> multas, Plaza plaza,Plaza plazaAsignada) {
         this.id = id;
         this.matricula = matricula;
-        this.dueño = dueño;
+        this.propietario = propietario;
         this.multas = multas;
-        this.plaza = plaza;
+        this.plazaAparcado = plaza;
+        this.plazaAsignada=plazaAsignada;
     }
 
     public Long getId() {
@@ -70,12 +77,12 @@ public class Coche {
         this.matricula = matricula;
     }
 
-    public String getDueño() {
-        return dueño;
+    public String getPropietario() {
+        return propietario;
     }
 
-    public void setDueño(String dueño) {
-        this.dueño = dueño;
+    public void setPropietario(String dueño) {
+        this.propietario = dueño;
     }
 
     public List<Multa> getMultas() {
@@ -86,12 +93,12 @@ public class Coche {
         this.multas = multas;
     }
 
-    public Plaza getPlaza() {
-        return plaza;
+    public Plaza getPlazaAparcado() {
+        return plazaAparcado;
     }
 
-    public void setPlaza(Plaza plaza) {
-        this.plaza = plaza;
+    public void setPlazaAparcado(Plaza plaza) {
+        this.plazaAparcado = plaza;
     }
 
     @Override
@@ -101,6 +108,16 @@ public class Coche {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
     }
+
+    public Plaza getPlazaAsignada() {
+        return plazaAsignada;
+    }
+
+    public void setPlazaAsignada(Plaza plazaAsignada) {
+        this.plazaAsignada = plazaAsignada;
+    }
+
+    
 
     @Override
     public boolean equals(Object obj) {
@@ -121,8 +138,8 @@ public class Coche {
 
     @Override
     public String toString() {
-        return "Coche [id=" + id + ", matricula=" + matricula + ", dueño=" + dueño + ", multas=" + multas + ", plaza="
-                + plaza + "]";
+        return "Coche [id=" + id + ", matricula=" + matricula + ", dueño=" + propietario + ", multas=" + multas + ", plaza="
+                + plazaAparcado + "]";
     }
 
     

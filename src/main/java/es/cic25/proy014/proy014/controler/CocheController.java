@@ -41,25 +41,31 @@ public class CocheController {
 
     @PostMapping()
     public Coche createCoche(@RequestBody Coche coche){
+        if (coche.getId()!=null)
+            throw new SecurityModificationException("Intento de crear un coche con id");
         return cocheService.createCoche(coche);
     }
 
     @PutMapping()
     public Coche updateCoche(@RequestBody Coche coche){
+        if (coche.getId()==null)
+            throw new SecurityModificationException("Intento de modificar un coche sin id");
         return cocheService.updateCoche(coche);
     }
 
-    @PutMapping("/aparcar")
-    public Coche aparcaCoche(@RequestBody Coche coche,@RequestBody Plaza plaza){
-        return cocheService.updateCoche(coche);
+    @PutMapping("/aparcar/{id}")
+    public Coche aparcaCoche(@RequestBody Coche coche,@PathVariable long id){
+        if (coche.getId()==null)
+            throw new SecurityModificationException("Intento de modificar un coche sin id");
+        return cocheService.aparcaCoche(coche,Long.valueOf(id));
     }
-
+    
     @PutMapping("/multar/")
     public Coche multarCoche(@RequestBody Coche coche,@PathVariable double importe){
+        if (coche.getId()==null)
+            throw new SecurityModificationException("Intento de modificar un coche sin id");
         return cocheService.multarCoche(coche,importe);
     }
-
-    
 
     @DeleteMapping("/{id}")
     public void deleteCoche(@PathVariable long id){

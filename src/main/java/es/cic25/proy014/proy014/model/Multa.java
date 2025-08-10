@@ -18,16 +18,15 @@ import jakarta.persistence.ManyToOne;
 @Entity
 public class Multa {
 
+    @Column(insertable = false)
+    private static final double IMPORTE_DIARIO=5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_multa")
     private Long id;
     
-    private LocalDate fecha;
-    
     private int dias;
-    
-    private double importeDiario;
 
     private double importe;
 
@@ -42,12 +41,12 @@ public class Multa {
     public Multa() {
     }
 
-    public Multa(Long id, LocalDate fecha, double importe, boolean pagada,  Coche coche) {
+    public Multa(Long id, double importe, boolean pagada,  Coche coche,int dias) {
         this.id = id;
-        this.fecha = fecha;
         this.importe = importe;
         this.pagada = pagada;
         this.coche=coche;
+        this.dias=dias;
     }
 
     public Long getId() {
@@ -56,14 +55,6 @@ public class Multa {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
     }
 
     public double getImporte() {
@@ -81,6 +72,26 @@ public class Multa {
     public void setPagada(boolean pagada) {
         this.pagada = pagada;
     }
+
+    public int getDias() {
+        return dias;
+    }
+
+    public void setDias(int dias) {
+        this.dias = dias;
+    }
+    
+    public Coche getCoche() {
+        return coche;
+    }
+
+    public void setCoche(Coche coche) {
+        this.coche = coche;
+    }
+
+    public static double getImporteDiario() {
+        return IMPORTE_DIARIO;
+    }
     
     @Override
     public int hashCode() {
@@ -88,14 +99,6 @@ public class Multa {
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         return result;
-    }
-
-    public Coche getCoche() {
-        return coche;
-    }
-
-    public void setCoche(Coche coche) {
-        this.coche = coche;
     }
 
     @Override
@@ -117,7 +120,8 @@ public class Multa {
 
     @Override
     public String toString() {
-        return "Multa [id=" + id + ", fecha=" + fecha + ", importe=" + importe + ", pagada=" + pagada + "]";
+        return "Multa [id=" + id + ", dias=" + dias + ", importe=" + importe + ", pagada=" + pagada + ", coche=" + coche
+                + "]";
     }
 
     
